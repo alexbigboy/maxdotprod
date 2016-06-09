@@ -1,0 +1,64 @@
+\documentclass[a4paper, 12pt]{article}				
+
+%============== Русский язык ===============================
+\usepackage[T2A]{fontenc}		
+\usepackage[utf8]{inputenc}	
+\usepackage[english,russian]{babel}	
+\usepackage{listings,  float, amsmath, amsthm, amssymb, cmap, graphicx, xcolor, hyperref, geometry}
+\usepackage{amsfonts}
+\usepackage{longtable}
+\usepackage{epsfig}
+\usepackage{verbatim}
+\theoremstyle{plain}
+
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\restylefloat{table}
+\usepackage{tcolorbox}
+
+\theoremstyle{problem}
+\newtheorem{problem}{Задача}
+
+
+
+
+\title{Поиск вектора, максимизирующего скалярное произведение с заданным запросом}
+
+\date{}
+
+
+\begin{document}
+\maketitle
+\begin{problem}
+По множеству точек $X \subset \mathbb{R}^d$ и запросу $q \in \mathbb{R}^d$ найти точку $p \in X$, т.ч:
+$$p = \textit{argmax}_{X}{<q, x>}$$
+\end{problem}
+
+
+\subsubsection*{Приближенная переформулировка для случая известного множества части запросов}
+$X = \{x_1, ... x_n\}$ --- выборка. $x_i \in \mathbb{R}^d$\\
+$Q = \{q_1, ... q_m\}$ --- примеры запросов. $q_i \in \mathbb{R}^d$\\
+Требуется найти разбиение $X = X_1 \sqcup X_2$, которое бы в среднем неплохо отделяло вектора с маленьким скалярным произведением от векторов с большим.
+$$\sum_{q \in Q}\left(\frac{1}{||X_1||}\sum_{x_1 \in X_1}<q,x_1> - \frac{1}{||X_2||}\sum_{x_2 \in X_2}<q, x_2>\right)^2 \longrightarrow \max_{X_1, X_2}$$
+Добавляя условие сбалансированности разделения ($||X_1|| = ||X_2||$), можем перейти к следующей задаче
+
+$$\sum_{Q}\left(\sum_{X_1}<q,x_1> - \sum_{X_2}<q, x_2>\right)^2 \longrightarrow \max_{X_1, X_2, ||X_1|| = ||X_2||}$$
+Упростим немного выражение слева
+\begin{align*}
+&\sum_{Q}\left(\sum_{X_1}<q,x_1> - \sum_{X_2}<q, x_2>\right)^2  =\\= 
+&\sum_Q\left(<q, \sum_{X_1}x_1 - \sum_{X_2}x_2>\right)^2 =\\=
+&\sum_Q (\sum_{X_1}x_1 - \sum_{X_2}x_2)^Tqq^T(\sum_{X_1}x_1 - \sum_{X_2}x_2) =\\=
+&(\sum_{X_1}x_1 - \sum_{X_2}x_2)^TQ^TQ(\sum_{X_1}x_1 - \sum_{X_2}x_2) = \\=
+&(\sum_{X_1}x_1 - \sum_{X_2}x_2)^TW^TW(\sum_{X_1}x_1 - \sum_{X_2}x_2) = \\=
+&(\sum_{X_1}Wx_1 - \sum_{X_2}Wx_2)^T(\sum_{X_1}Wx_1 - \sum_{X_2}Lx_2) = \\=
+&||\sum_{X_1}Wx_1 - \sum_{X_2}Wx_2||^2 
+\end{align*}
+$W \in \mathbb{R}^{r \times d}$, где $r \leq d$.\\
+Если $m \leq d$, то, в качестве $W$ можно взять саму $Q$. \\
+Если $m \gg d$, то сойдет разложение Холецкого.
+\begin{tcolorbox}
+$$||\sum_{X_1}Wx_1 - \sum_{X_2}Wx_2||^2\longrightarrow \max_{\{X_1, X_2 | X_1 \sqcup X_2 = X, ||X_1|| = ||X_2||\}}$$
+\end{tcolorbox}
+\end{document}
